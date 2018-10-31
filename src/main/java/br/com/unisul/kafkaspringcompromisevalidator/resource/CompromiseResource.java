@@ -2,29 +2,31 @@ package br.com.unisul.kafkaspringcompromisevalidator.resource;
 
 import br.com.unisul.kafkaspringcompromisevalidator.model.Compromise;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("kafka")
+@RequestMapping("compromise")
 public class CompromiseResource {
+
+
+    @Autowired
+    KafkaTemplate<String, Compromise> kafkaTemplate;
 
     private static final String TOPIC = "importing";
 
-    @Autowired
-    private KafkaTemplate<String, Compromise> kafkaTemplate;
+    @RequestMapping(value = "/publish", method = RequestMethod.POST)
+    public ResponseEntity<Compromise> post(@RequestBody final Compromise rawCompromise) {
+        //final Compromise compromise = new Compromise();
+        //compromise.setPaymentDescription(rawCompromise);
 
-    @GetMapping("/publish/{compromise}")
-    public String post(@PathVariable("compromise") final String rawCompromise) {
+        kafkaTemplate.send(TOPIC, rawCompromise);
 
-        final Compromise compromise = new Compromise();
-        compromise.setPaymentDescription(rawCompromise);
-
-        kafkaTemplate.send(TOPIC, compromise);
-
-        return "Compromise published sucessfully!";
+        return new ResponseEntity<Compromise>(rawCompromise, HttpStatus.OK);
     }
 }
