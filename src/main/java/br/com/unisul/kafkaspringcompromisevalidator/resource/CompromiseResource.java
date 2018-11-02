@@ -15,22 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("compromise")
 public class CompromiseResource {
 
-    @Autowired
-    KafkaTemplate<String, Compromise> kafkaTemplate;
 
     private static final String TOPIC = "importing";
 
     @RequestMapping(value = "/publish", method = RequestMethod.POST)
     public ResponseEntity<Compromise> post(@RequestBody final Compromise rawCompromise) throws Exception {
-        //final Compromise compromise = new Compromise();
-        //compromise.setPaymentDescription(rawCompromise);
 
-        CompromiseService compromiseService = new CompromiseService();
-
+        final CompromiseService compromiseService = new CompromiseService();
         compromiseService.validateCompromise(rawCompromise);
+        compromiseService.parallelize(rawCompromise, TOPIC);
 
-        kafkaTemplate.send(TOPIC, rawCompromise);
-
-        return new ResponseEntity<Compromise>(rawCompromise, HttpStatus.OK);
+        return new ResponseEntity<>(rawCompromise, HttpStatus.OK);
     }
 }
