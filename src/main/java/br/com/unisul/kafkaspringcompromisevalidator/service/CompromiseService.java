@@ -3,10 +3,12 @@ package br.com.unisul.kafkaspringcompromisevalidator.service;
 import br.com.unisul.kafkaspringcompromisevalidator.model.Compromise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Service
 public class CompromiseService {
 
     @Autowired
@@ -18,9 +20,9 @@ public class CompromiseService {
             throw new Exception("Bank is required");
         }
 
-        if (compromise.getDueDate() == null) {
-            throw new Exception("Due date is required");
-        }
+        //if (compromise.getDueDate() == null) {
+        //    throw new Exception("Due date is required");
+        //}
 
         BigDecimal amount = compromise.getAmount();
         if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) {
@@ -39,7 +41,7 @@ public class CompromiseService {
 
     public void validateCompromise(Compromise compromise) throws Exception {
         this.validateRequirements(compromise);
-        this.validateDueDate(compromise.getDueDate());
+        //this.validateDueDate(compromise.getDueDate());
     }
 
     public void parallelize(final Compromise compromise, final String topic) {
