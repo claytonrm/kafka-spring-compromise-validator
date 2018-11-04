@@ -1,5 +1,7 @@
 # Compromises validator
 
+Import a set of bank compromises in parallel process.
+
 ## Setup
 
 ### Requirements
@@ -28,7 +30,16 @@ Open terminal at kafka home and run the following commands:
  - On your IDE, run the main class and check the localhost address on http://localhost:8081/
  - Using a client http post test such as [Postman](https://www.getpostman.com/), set up the following config:<br/>
    ```
-   URL Request: POST http://localhost:8081/compromise/publish<br/>
-   Headers: Content-Type: application/json<br/>
+   URL Request: POST http://localhost:8081/compromise/publish
+   Headers: Content-Type: application/json
    Body (raw example): `{"bank":"001", "payerName": "Bruce Springsteen", "dueDate": "2018-11-02", "amount": 150000.00, "payeeName": "Chad Smith", "paymentDescription": "Last show"}`
    ```
+   
+### Rules
+
+ In order to record compromise, many rules are defined:
+ - Fields bank, amount and dueDate are required;
+ - dueDate value must be higher than current date;
+ - amount value must be higher than zero.
+ 
+ In case of failure, an exception will be thrown.
