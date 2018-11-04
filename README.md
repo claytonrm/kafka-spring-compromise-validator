@@ -1,6 +1,6 @@
 # Compromises validator
 
-Import a set of bank compromises in parallel process.
+Import one or many bank compromises in parallel process.
 
 ## Setup
 
@@ -32,12 +32,13 @@ Open terminal at kafka home and run the following commands:
    ```
    URL Request: POST http://localhost:8081/compromise/publish
    Headers: Content-Type: application/json
-   Body (raw example): `{"bank":"001", "payerName": "Bruce Springsteen", "dueDate": "2018-11-02", "amount": 150000.00, "payeeName": "Chad Smith", "paymentDescription": "Last show"}`
+   Body (raw example): `[{"bank":"001", "payerName": "Bruce Springsteen", "dueDate": "2018-11-02", "amount": 150000.00, "payeeName": "Chad Smith", "paymentDescription": "Last show"},
+   {"bank":"001", "payerName": "Joey Ramone", "dueDate": "2018-12-15", "amount": 34000.91, "payeeName": "Iggy Pop", "paymentDescription": "A borrow"}]`
    ```
    
 ### Rules
 
- In order to record compromise, many rules are defined:
+ In order to record compromise, many rules are defined for each compromise:
  - Fields bank, amount and dueDate are required;
  - dueDate value must be higher than current date;
  - amount value must be higher than zero.
