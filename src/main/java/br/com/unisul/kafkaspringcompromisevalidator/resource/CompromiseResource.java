@@ -2,7 +2,9 @@ package br.com.unisul.kafkaspringcompromisevalidator.resource;
 
 import br.com.unisul.kafkaspringcompromisevalidator.model.Compromise;
 import br.com.unisul.kafkaspringcompromisevalidator.service.CompromiseService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,21 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompromiseResource {
 
     @Autowired
-    KafkaTemplate<String, Compromise> kafkaTemplate;
+    CompromiseService compromiseService;
 
     private static final String TOPIC = "importing";
 
     @RequestMapping(value = "/publish", method = RequestMethod.POST)
     public ResponseEntity<Compromise> post(@RequestBody final Compromise rawCompromise) throws Exception {
-        //final Compromise compromise = new Compromise();
-        //compromise.setPaymentDescription(rawCompromise);
-
-        CompromiseService compromiseService = new CompromiseService();
 
         compromiseService.validateCompromise(rawCompromise);
+        compromiseService.parallelize(rawCompromise, TOPIC);
 
-        kafkaTemplate.send(TOPIC, rawCompromise);
-
-        return new ResponseEntity<Compromise>(rawCompromise, HttpStatus.OK);
+        return new ResponseEntity<>(rawCompromise, HttpStatus.OK);
     }
 }
